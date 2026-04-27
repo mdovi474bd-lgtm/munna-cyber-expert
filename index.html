@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'/>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+    <title>S A MUNNA | COMMAND CENTER</title>
+    <style>
+        body, html { background: #000; color: #0f0; margin: 0; padding: 0; font-family: 'Courier New', monospace; overflow-x: hidden; height: 100vh; }
+        #matrix-bg { position: fixed; top: 0; left: 0; z-index: -1; width: 100%; height: 100%; opacity: 0.2; }
+        
+        .main-container { max-width: 600px; margin: auto; padding: 20px; text-align: center; position: relative; z-index: 10; }
+
+        /* প্রোফাইল ছবি */
+        .p-img { width: 150px; height: 150px; border-radius: 50%; border: 3px solid #0f0; box-shadow: 0 0 25px #0f0; object-fit: cover; margin: 20px 0; animation: glow 2s infinite; }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 15px #0f0; } 50% { box-shadow: 0 0 35px #0f0; } }
+
+        /* টাইপিং এরিয়া */
+        .term-box { background: rgba(0, 25, 0, 0.9); border: 1px solid #0f0; padding: 15px; text-align: left; min-height: 160px; font-size: 14px; box-shadow: inset 0 0 10px #0f0; margin-bottom: 20px; }
+        .cursor { display: inline-block; width: 8px; height: 18px; background: #0f0; margin-left: 5px; animation: blink 0.8s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* ইন্টেল বক্স */
+        .intel { border: 1px dashed #f00; color: #f00; padding: 10px; font-size: 12px; margin-bottom: 20px; text-align: left; background: rgba(20,0,0,0.4); }
+
+        /* মেসেনজার */
+        .chat-frame { background: #080808; border: 1px solid #0f0; border-radius: 5px; height: 350px; display: flex; flex-direction: column; text-align: left; }
+        #chat-logs { flex: 1; padding: 15px; overflow-y: auto; color: #0f0; font-size: 13px; }
+        .input-area { display: flex; padding: 10px; background: #111; border-top: 1px solid #0f0; }
+        input { flex: 1; background: #000; border: 1px solid #0f0; color: #0f0; padding: 10px; outline: none; }
+        button { background: #0f0; color: #000; border: none; padding: 10px 15px; cursor: pointer; font-weight: bold; }
+
+        /* স্টার্ট বাটন */
+        #boot-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .boot-btn { border: 2px solid #0f0; padding: 20px 40px; color: #0f0; font-size: 1.5em; cursor: pointer; box-shadow: 0 0 20px #0f0; }
+    </style>
+</head>
+<body>
+
+<div id='boot-screen' onclick='startSystem()'>
+    <div class='boot-btn'>[ ACCESS SYSTEM ]</div>
+</div>
+
+<canvas id='matrix-bg'></canvas>
+<audio id='snd-g' src='https://www.myinstants.com/media/sounds/access-granted.mp3'></audio>
+<audio id='snd-t' src='https://www.soundjay.com/communication/typewriter-key-1.mp3'></audio>
+
+<div class='main-container'>
+    <h1 style='letter-spacing:5px; text-shadow:0 0 10px #0f0;'>S A MUNNA</h1>
+    
+    <img class='p-img' src='https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiH16E5MeqQdyYOx9sj5KIgDIAoAqkZGy99RPt0LSePXM_ctq8SR-Cba0mLDX4ovQ_wGh8tSxjJ_cREXxHMbOd9zLkRISichjh3grw2YmsP9SozbQsdNpWxLgyrw9iX8_I8Xb8MQak8obXDrVrF0Ft-LaVDYSQ73CtzDWA20iKevgTK7RYPJVHIc31odo0/s2048/Picsart_26-04-27_00-47-36-554.jpg'/>
+
+    <div class='intel'>
+        [!] STATUS: ENCRYPTED<br/>
+        [>] IP_ADDRESS: <span id='v-ip'>TRACING...</span><br/>
+        [>] DEVICE_OS: <span id='v-os'>SCANNING...</span>
+    </div>
+
+    <div class='term-box'>
+        <span id='type-target'></span><span class='cursor'></span>
+    </div>
+
+    <div class='chat-frame'>
+        <div id='chat-logs'>Munna_System_v9.0 Active. Waiting for encrypted message...</div>
+        <div class='input-area'>
+            <input id='m-inp' placeholder='Enter command...' type='text'/>
+            <button onclick='sendData()'>EXE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Matrix Rain
+    const c = document.getElementById('matrix-bg');
+    const ctx = c.getContext('2d');
+    c.width = window.innerWidth; c.height = window.innerHeight;
+    const drops = Array(Math.floor(c.width/16)).fill(1);
+    function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,c.width,c.height);
+        ctx.fillStyle = "#0f0"; ctx.font = "15px monospace";
+        drops.forEach((y, i) => {
+            ctx.fillText(Math.floor(Math.random()*2), i*16, y*16);
+            if(y*16 > c.height && Math.random() > 0.975) drops[i] = 0; drops[i]++;
+        });
+    }
+    setInterval(draw, 50);
+
+    // Startup & Typing
+    const lines = [
+        "> Initializing breach sequence...",
+        "> S A MUNNA: ROOT_ACCESS_GRANTED.",
+        "> Intercepting local data packet...",
+        "> Skills: Ethical Hacking | Pentesting",
+        "> Status: SYSTEM IS SECURED."
+    ];
+    let lIdx = 0, cIdx = 0;
+
+    function startSystem() {
+        document.getElementById('boot-screen').style.display = 'none';
+        document.getElementById('snd-g').play();
+        type();
+        fetchInfo();
+    }
+
+    function type() {
+        const target = document.getElementById('type-target');
+        const snd = document.getElementById('snd-t');
+        if (lIdx < lines.length) {
+            if (cIdx < lines[lIdx].length) {
+                target.innerHTML += lines[lIdx].charAt(cIdx);
+                snd.cloneNode().play().catch(e => {});
+                cIdx++;
+                setTimeout(type, 40);
+            } else {
+                target.innerHTML += "<br/>";
+                lIdx++; cIdx = 0;
+                setTimeout(type, 600);
+            }
+        }
+    }
+
+    function fetchInfo() {
+        document.getElementById('v-os').innerText = navigator.platform;
+        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => {
+            document.getElementById('v-ip').innerText = d.ip;
+        });
+    }
+
+    function sendData() {
+        const inp = document.getElementById('m-inp');
+        const val = inp.value.trim();
+        if(!val) return;
+        document.getElementById('chat-logs').innerHTML += `<br/><span style='color:white'>[SENT]: ${val}</span>`;
+        
+        // Telegram Bot Call
+        fetch(`https://api.telegram.org/bot8665353987:AAE8qj8bVbN5JSOHr1yBzd4y0gP86BpXSkI/sendMessage`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: '8444393519', text: `📩 MSG: ${val}\n🌐 IP: ${document.getElementById('v-ip').innerText}` })
+        });
+        inp.value = '';
+    }
+</script>
+</body>
+</html>
