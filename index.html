@@ -2,17 +2,18 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GOD JARVIS AI</title>
+<title>Cyber Terminal</title>
 
 <style>
 body{
 margin:0;
 background:black;
-color:#00ffe5;
+color:#00ff9f;
 font-family:monospace;
 overflow:hidden;
 }
 
+/* MATRIX BACKGROUND */
 canvas{
 position:fixed;
 top:0;
@@ -20,42 +21,25 @@ left:0;
 z-index:-1;
 }
 
-/* HUD */
-.hud{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-width:340px;
-height:340px;
-border-radius:50%;
-border:2px solid #00ffe5;
-box-shadow:0 0 60px #00ffe5;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
+#terminal{
+padding:15px;
+white-space:pre-line;
+font-size:14px;
+}
+
+.box{
+border:1px solid #00ff9f;
+padding:10px;
+margin-top:10px;
 }
 
 button{
-margin:5px;
-padding:8px 12px;
 background:black;
-border:1px solid #00ffe5;
-color:#00ffe5;
+color:#00ff9f;
+border:1px solid #00ff9f;
+padding:8px;
+width:100%;
 cursor:pointer;
-}
-
-#chat{
-position:absolute;
-bottom:10px;
-left:10px;
-width:320px;
-height:140px;
-overflow:auto;
-border:1px solid #00ffe5;
-padding:5px;
-font-size:12px;
 }
 </style>
 </head>
@@ -64,127 +48,72 @@ font-size:12px;
 
 <canvas id="bg"></canvas>
 
-<div class="hud">
+<div id="terminal">
 
-<h2>GOD JARVIS</h2>
-<p id="status">OFFLINE</p>
+> INITIALIZING SYSTEM...
+> LOADING CYBER MODULES...
+> ACCESS GRANTED ✔
 
-<button onclick="start()">ACTIVATE</button>
-<button onclick="voice()">🎤 TALK</button>
+<div class="box">
+🛡 CYBER SECURITY LAB
+<button onclick="scan()">RUN SECURITY SCAN</button>
+</div>
+
+<div class="box" id="output">STATUS: READY</div>
 
 </div>
 
-<div id="chat"></div>
-
 <script>
 
-/* ===== BACKGROUND ===== */
+/* MATRIX EFFECT */
 let c=document.getElementById("bg");
 let ctx=c.getContext("2d");
 c.width=innerWidth;
 c.height=innerHeight;
 
-let nodes=[];
-for(let i=0;i<90;i++){
-nodes.push({
-x:Math.random()*c.width,
-y:Math.random()*c.height,
-dx:(Math.random()-0.5)*2,
-dy:(Math.random()-0.5)*2
-});
-}
+let letters="01";
+let drops=[];
+for(let i=0;i<100;i++) drops[i]=1;
 
 function draw(){
-ctx.fillStyle="rgba(0,0,0,0.25)";
+ctx.fillStyle="rgba(0,0,0,0.1)";
 ctx.fillRect(0,0,c.width,c.height);
 
-ctx.fillStyle="#00ffe5";
+ctx.fillStyle="#00ff9f";
+ctx.font="14px monospace";
 
-nodes.forEach(n=>{
-ctx.fillRect(n.x,n.y,2,2);
-n.x+=n.dx;
-n.y+=n.dy;
+for(let i=0;i<drops.length;i++){
+let text=letters[Math.floor(Math.random()*letters.length)];
+ctx.fillText(text,i*14,drops[i]*14);
 
-if(n.x<0||n.x>c.width) n.dx*=-1;
-if(n.y<0||n.y>c.height) n.dy*=-1;
-});
+if(drops[i]*14>c.height) drops[i]=0;
+drops[i]++;
 }
+}
+
 setInterval(draw,30);
 
-/* ===== SPEECH ===== */
-function speak(text){
-let s=new SpeechSynthesisUtterance(text);
-s.lang="en-US";
-s.rate=1;
-window.speechSynthesis.speak(s);
-}
+/* SCAN SIMULATION */
+function scan(){
 
-/* ===== CHAT ===== */
-function add(msg){
-document.getElementById("chat").innerHTML+="<div>> "+msg+"</div>";
-}
+let steps=[
+"Scanning network...",
+"Checking firewall...",
+"Analyzing ports...",
+"Detecting vulnerabilities...",
+"Encrypting system...",
+"✔ SYSTEM SECURE"
+];
 
-/* ===== OPENAI API ===== */
-const API_KEY="YOUR_OPENAI_API_KEY"; // এখানে বসাও
+let i=0;
+let out=document.getElementById("output");
+out.innerText="";
 
-async function askAI(text){
-
-let res=await fetch("https://api.openai.com/v1/chat/completions",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer "+API_KEY
-},
-body:JSON.stringify({
-model:"gpt-4o-mini",
-messages:[
-{
-role:"system",
-content:"You are JARVIS GOD MODE AI assistant. Reply naturally in Bangla or English."
-},
-{
-role:"user",
-content:text
-}
-]
-})
-});
-
-let data=await res.json();
-return data.choices[0].message.content;
-}
-
-/* ===== START ===== */
-function start(){
-document.getElementById("status").innerText="ONLINE (GOD MODE)";
-speak("GOD JARVIS activated");
-}
-
-/* ===== VOICE ===== */
-function voice(){
-
-let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-
-if(!SR){
-alert("Voice not supported");
-return;
-}
-
-let rec=new SR();
-rec.lang="en-US";
-rec.start();
-
-rec.onresult=async function(e){
-let text=e.results[0][0].transcript;
-
-add("YOU: "+text);
-
-let reply=await askAI(text);
-
-add("AI: "+reply);
-
-speak(reply);
-};
+let interval=setInterval(()=>{
+out.innerText+=steps[i]+"\n";
+i++;
+if(i>=steps.length) clearInterval(interval);
+},600);
 }
 
 </script>
