@@ -37,7 +37,16 @@ background:black;
 white-space:pre-line;
 text-align:center;
 font-size:16px;
-text-shadow:0 0 10px #00ff9f;
+margin-bottom:20px;
+}
+
+/* START BUTTON */
+#startBtn{
+padding:10px 20px;
+border:1px solid #00ff9f;
+background:black;
+color:#00ff9f;
+cursor:pointer;
 }
 
 /* MAIN */
@@ -128,6 +137,7 @@ margin-top:10px;
 <!-- INTRO -->
 <div id="intro">
 <div id="type"></div>
+<button id="startBtn" onclick="startSystem()">ENTER SYSTEM</button>
 </div>
 
 <!-- MAIN -->
@@ -161,7 +171,7 @@ margin-top:10px;
 
 <script>
 
-/* MATRIX EFFECT */
+/* MATRIX */
 let c=document.getElementById("matrix");
 let ctx=c.getContext("2d");
 c.width=window.innerWidth;
@@ -177,7 +187,6 @@ for(let x=0;x<columns;x++) drops[x]=1;
 function draw(){
 ctx.fillStyle="rgba(0,0,0,0.05)";
 ctx.fillRect(0,0,c.width,c.height);
-
 ctx.fillStyle="#00ff9f";
 ctx.font=fontSize+"px monospace";
 
@@ -191,11 +200,24 @@ drops[i]=0;
 drops[i]++;
 }
 }
-
 setInterval(draw,33);
+
+/* SOUND ENABLE */
+let audioReady=false;
+
+function startSystem(){
+audioReady=true;
+beep();
+document.getElementById("intro").style.display="none";
+document.getElementById("main").style.opacity="1";
+typeName();
+animateBoxes();
+log("SYSTEM READY ✔");
+}
 
 /* SOUND */
 function beep(){
+if(!audioReady) return;
 let ctx2=new (window.AudioContext||window.webkitAudioContext)();
 let o=ctx2.createOscillator();
 o.frequency.value=600;
@@ -204,33 +226,21 @@ o.start();
 o.stop(ctx2.currentTime+0.05);
 }
 
-/* INTRO */
+/* INTRO TEXT */
 let intro=`INITIALIZING SYSTEM...
 LOADING MODULES...
-স্বাগতম`;
+CLICK ENTER TO START`;
 
 let i=0;
 
 function typeIntro(){
 if(i<intro.length){
 document.getElementById("type").innerText+=intro[i];
-beep();
 i++;
 setTimeout(typeIntro,40);
-}else{
-setTimeout(startMain,1000);
 }
 }
 typeIntro();
-
-/* MAIN */
-function startMain(){
-document.getElementById("intro").style.display="none";
-document.getElementById("main").style.opacity="1";
-typeName();
-animateBoxes();
-log("SYSTEM READY ✔");
-}
 
 /* NAME */
 let nameText="S A MUNNA";
@@ -244,7 +254,7 @@ setTimeout(typeName,120);
 }
 }
 
-/* BOX ANIMATION */
+/* BOX */
 function animateBoxes(){
 let boxes=document.querySelectorAll(".box");
 boxes.forEach((b,i)=>{
@@ -264,10 +274,11 @@ let text="";
 if(x==="network") text="🌐 Network Security\nProtects network.";
 if(x==="web") text="🌍 Web Security\nProtects websites.";
 if(x==="crypto") text="🔑 Cryptography\nEncrypts data.";
-if(x==="soc") text="📡 SOC\nLive monitoring.";
+if(x==="soc") text="📡 SOC Monitoring\nLive monitoring.";
 
 document.getElementById("out").innerText=text;
 log("Opened: "+x);
+beep();
 }
 
 </script>
