@@ -2,186 +2,133 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyber Ultimate</title>
+<title>GOD JARVIS AI</title>
 
 <style>
 body{
 margin:0;
 background:black;
-color:#00ff9f;
+color:#00ffe5;
 font-family:monospace;
 overflow:hidden;
 }
 
-/* MAP */
-#map{
+canvas{
 position:fixed;
 top:0;
 left:0;
-width:100%;
-height:100%;
 z-index:-1;
 }
 
-/* INTRO */
-#intro{
-position:fixed;
-width:100%;
-height:100%;
+/* HUD */
+.hud{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:340px;
+height:340px;
+border-radius:50%;
+border:2px solid #00ffe5;
+box-shadow:0 0 60px #00ffe5;
 display:flex;
+flex-direction:column;
 align-items:center;
 justify-content:center;
-flex-direction:column;
-background:black;
-z-index:999;
 }
 
-#type{
-white-space:pre-line;
-text-align:center;
-}
-
-/* BUTTON */
-#startBtn{
-padding:10px 20px;
-border:1px solid #00ff9f;
+button{
+margin:5px;
+padding:8px 12px;
 background:black;
-color:#00ff9f;
+border:1px solid #00ffe5;
+color:#00ffe5;
 cursor:pointer;
-margin-top:15px;
 }
 
-/* MAIN */
-#main{
-opacity:0;
-transition:1s;
-padding:10px;
-}
-
-/* BOX */
-.box{
-border:1px solid #00ff9f;
-padding:10px;
-margin:8px 0;
-background:rgba(0,255,159,0.05);
-}
-
-/* CHAT */
 #chat{
-height:150px;
+position:absolute;
+bottom:10px;
+left:10px;
+width:320px;
+height:140px;
 overflow:auto;
-border:1px solid #00ff9f;
+border:1px solid #00ffe5;
 padding:5px;
 font-size:12px;
-}
-
-input{
-width:100%;
-padding:8px;
-background:black;
-color:#00ff9f;
-border:1px solid #00ff9f;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="map"></canvas>
+<canvas id="bg"></canvas>
 
-<!-- INTRO -->
-<div id="intro">
-<div id="type"></div>
-<button id="startBtn" onclick="startSystem()">ENTER SYSTEM</button>
+<div class="hud">
+
+<h2>GOD JARVIS</h2>
+<p id="status">OFFLINE</p>
+
+<button onclick="start()">ACTIVATE</button>
+<button onclick="voice()">🎤 TALK</button>
+
 </div>
-
-<!-- MAIN -->
-<div id="main">
-
-<div class="box">🧠 CYBER SYSTEM ACTIVE</div>
-
-<div class="box">🌍 GLOBAL MAP RUNNING</div>
-
-<div class="box">🔊 SOUND ACTIVE</div>
-
-<div class="box">
-🤖 AI CHAT (বাংলা + English)
 
 <div id="chat"></div>
-<input placeholder="Type here..." onkeydown="send(event)">
-</div>
-
-</div>
 
 <script>
 
-/* ===== MAP ===== */
-let c=document.getElementById("map");
+/* ===== BACKGROUND ===== */
+let c=document.getElementById("bg");
 let ctx=c.getContext("2d");
 c.width=innerWidth;
 c.height=innerHeight;
 
-let pts=[];
-for(let i=0;i<60;i++){
-pts.push({x:Math.random()*c.width,y:Math.random()*c.height,dx:(Math.random()-0.5)*2,dy:(Math.random()-0.5)*2});
+let nodes=[];
+for(let i=0;i<90;i++){
+nodes.push({
+x:Math.random()*c.width,
+y:Math.random()*c.height,
+dx:(Math.random()-0.5)*2,
+dy:(Math.random()-0.5)*2
+});
 }
 
 function draw(){
-ctx.fillStyle="rgba(0,0,0,0.2)";
+ctx.fillStyle="rgba(0,0,0,0.25)";
 ctx.fillRect(0,0,c.width,c.height);
-ctx.fillStyle="#00ff9f";
 
-pts.forEach(p=>{
-ctx.fillRect(p.x,p.y,2,2);
-p.x+=p.dx;
-p.y+=p.dy;
-if(p.x<0||p.x>c.width) p.dx*=-1;
-if(p.y<0||p.y>c.height) p.dy*=-1;
+ctx.fillStyle="#00ffe5";
+
+nodes.forEach(n=>{
+ctx.fillRect(n.x,n.y,2,2);
+n.x+=n.dx;
+n.y+=n.dy;
+
+if(n.x<0||n.x>c.width) n.dx*=-1;
+if(n.y<0||n.y>c.height) n.dy*=-1;
 });
 }
 setInterval(draw,30);
 
-/* ===== SOUND ===== */
-let audio;
-function startSound(){
-audio=new Audio("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-audio.loop=true;
-audio.volume=0.2;
-audio.play();
+/* ===== SPEECH ===== */
+function speak(text){
+let s=new SpeechSynthesisUtterance(text);
+s.lang="en-US";
+s.rate=1;
+window.speechSynthesis.speak(s);
 }
 
-/* ===== INTRO ===== */
-let txt="INITIALIZING...\nLOADING SYSTEM...\nWELCOME";
-let i=0;
-
-function type(){
-if(i<txt.length){
-document.getElementById("type").innerText+=txt[i];
-i++;
-setTimeout(type,40);
-}
-}
-type();
-
-/* START */
-function startSystem(){
-document.getElementById("intro").style.display="none";
-document.getElementById("main").style.opacity="1";
-startSound();
+/* ===== CHAT ===== */
+function add(msg){
+document.getElementById("chat").innerHTML+="<div>> "+msg+"</div>";
 }
 
-/* ===== CHATBOT ===== */
+/* ===== OPENAI API ===== */
+const API_KEY="YOUR_OPENAI_API_KEY"; // এখানে বসাও
 
-const API_KEY=""; // এখানে key দিলে real AI, না দিলে fallback
+async function askAI(text){
 
-async function send(e){
-if(e.key==="Enter"){
-let input=e.target.value;
-let chat=document.getElementById("chat");
-
-chat.innerHTML+="<div>> "+input+"</div>";
-
-if(API_KEY){
 let res=await fetch("https://api.openai.com/v1/chat/completions",{
 method:"POST",
 headers:{
@@ -191,29 +138,53 @@ headers:{
 body:JSON.stringify({
 model:"gpt-4o-mini",
 messages:[
-{role:"system",content:"Reply in Bangla if user writes Bangla."},
-{role:"user",content:input}
+{
+role:"system",
+content:"You are JARVIS GOD MODE AI assistant. Reply naturally in Bangla or English."
+},
+{
+role:"user",
+content:text
+}
 ]
 })
 });
 
 let data=await res.json();
-let reply=data.choices[0].message.content;
-chat.innerHTML+="<div style='color:#0ff'>AI: "+reply+"</div>";
-}
-else{
-/* fallback */
-let reply="আমি বুঝতে পারিনি";
-if(input.includes("hello")||input.includes("hi")) reply="হ্যালো 👋";
-if(input.includes("হ্যাক")) reply="Ethical hacking শেখো 👍";
-if(input.includes("security")) reply="Security মানে protection";
-
-chat.innerHTML+="<div style='color:#0ff'>AI: "+reply+"</div>";
+return data.choices[0].message.content;
 }
 
-e.target.value="";
-chat.scrollTop=chat.scrollHeight;
+/* ===== START ===== */
+function start(){
+document.getElementById("status").innerText="ONLINE (GOD MODE)";
+speak("GOD JARVIS activated");
 }
+
+/* ===== VOICE ===== */
+function voice(){
+
+let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+
+if(!SR){
+alert("Voice not supported");
+return;
+}
+
+let rec=new SR();
+rec.lang="en-US";
+rec.start();
+
+rec.onresult=async function(e){
+let text=e.results[0][0].transcript;
+
+add("YOU: "+text);
+
+let reply=await askAI(text);
+
+add("AI: "+reply);
+
+speak(reply);
+};
 }
 
 </script>
