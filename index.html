@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cyber Terminal</title>
+<title>Cyber Security Dashboard</title>
 
 <style>
 body{
@@ -10,111 +10,170 @@ margin:0;
 background:black;
 color:#00ff9f;
 font-family:monospace;
-overflow:hidden;
 }
 
-/* MATRIX BACKGROUND */
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
+/* GRID */
+.container{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+padding:10px;
 }
 
-#terminal{
-padding:15px;
-white-space:pre-line;
-font-size:14px;
-}
-
-.box{
+/* CARD */
+.card{
 border:1px solid #00ff9f;
 padding:10px;
-margin-top:10px;
+background:rgba(0,255,159,0.05);
 }
 
-button{
-background:black;
-color:#00ff9f;
-border:1px solid #00ff9f;
-padding:8px;
-width:100%;
-cursor:pointer;
+/* PROFILE */
+.profile{
+grid-column:1/3;
+text-align:center;
+}
+
+.profile img{
+width:90px;
+border-radius:50%;
+border:2px solid #00ff9f;
+}
+
+/* TERMINAL */
+#terminal{
+height:150px;
+overflow:auto;
+font-size:12px;
+}
+
+/* BAR */
+.bar{
+height:10px;
+background:#003f2f;
+margin-top:5px;
+}
+
+.fill{
+height:100%;
+background:#00ff9f;
+width:50%;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="bg"></canvas>
+<div class="container">
 
-<div id="terminal">
-
-> INITIALIZING SYSTEM...
-> LOADING CYBER MODULES...
-> ACCESS GRANTED ✔
-
-<div class="box">
-🛡 CYBER SECURITY LAB
-<button onclick="scan()">RUN SECURITY SCAN</button>
+<div class="card profile">
+<img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhgtMl3KB6JTvqariXvg5RsFw3_lbBNOShjsQdCvvvuyOHA-fgoKWWX5dh_jufQM9Ji042weDM_Pdp6wc2AecMIUhUd5GQjgY5L3jLWOJMaNWuf3nQP1lv5TPyZ_Dc8dPYXL3olXA7WhzT-fb_9Z6N_ppGRtH75jB0_Q62u1FnraMbpgZtm1kd8dm3toRg/s1517/Screenshot_20260430_201858.jpg">
+<h3>S A MUNNA</h3>
+<p>Cyber Security Analyst</p>
 </div>
 
-<div class="box" id="output">STATUS: READY</div>
+<div class="card">
+<h4>🖥 CPU LOAD</h4>
+<div class="bar"><div id="cpu" class="fill"></div></div>
+</div>
+
+<div class="card">
+<h4>🌐 NETWORK</h4>
+<div class="bar"><div id="net" class="fill"></div></div>
+</div>
+
+<div class="card">
+<h4>⚠ THREAT LEVEL</h4>
+<div class="bar"><div id="threat" class="fill"></div></div>
+</div>
+
+<div class="card">
+<h4>🔎 LIVE SCAN</h4>
+<div id="scan">Scanning...</div>
+</div>
+
+<div class="card">
+<h4>💻 TERMINAL</h4>
+<div id="terminal">> SYSTEM ONLINE</div>
+</div>
 
 </div>
 
 <script>
 
-/* MATRIX EFFECT */
-let c=document.getElementById("bg");
-let ctx=c.getContext("2d");
-c.width=innerWidth;
-c.height=innerHeight;
-
-let letters="01";
-let drops=[];
-for(let i=0;i<100;i++) drops[i]=1;
-
-function draw(){
-ctx.fillStyle="rgba(0,0,0,0.1)";
-ctx.fillRect(0,0,c.width,c.height);
-
-ctx.fillStyle="#00ff9f";
-ctx.font="14px monospace";
-
-for(let i=0;i<drops.length;i++){
-let text=letters[Math.floor(Math.random()*letters.length)];
-ctx.fillText(text,i*14,drops[i]*14);
-
-if(drops[i]*14>c.height) drops[i]=0;
-drops[i]++;
-}
+/* RANDOM BAR */
+function updateBar(id){
+let val=Math.floor(Math.random()*100);
+document.getElementById(id).style.width=val+"%";
 }
 
-setInterval(draw,30);
+/* UPDATE LOOP */
+setInterval(()=>{
+updateBar("cpu");
+updateBar("net");
+updateBar("threat");
+},2000);
 
-/* SCAN SIMULATION */
-function scan(){
+/* TERMINAL */
+function log(t){
+let term=document.getElementById("terminal");
+term.innerText+="\n> "+t;
+term.scrollTop=99999;
+}
 
-let steps=[
-"Scanning network...",
-"Checking firewall...",
-"Analyzing ports...",
-"Detecting vulnerabilities...",
-"Encrypting system...",
-"✔ SYSTEM SECURE"
+/* SCAN TEXT */
+let scans=[
+"Scanning IP traffic...",
+"Checking open ports...",
+"Firewall active and stable...",
+"No threat detected...",
+"Analyzing incoming packets...",
+"Monitoring suspicious activity..."
 ];
 
-let i=0;
-let out=document.getElementById("output");
-out.innerText="";
+setInterval(()=>{
+let s=scans[Math.floor(Math.random()*scans.length)];
+document.getElementById("scan").innerText=s;
+log(s);
+},3000);
 
-let interval=setInterval(()=>{
-out.innerText+=steps[i]+"\n";
-i++;
-if(i>=steps.length) clearInterval(interval);
-},600);
+/* 🔊 BACKGROUND CYBER SOUND */
+let bgSound = new Audio("https://www.soundjay.com/mechanical/sounds/keyboard-typing-03.mp3");
+bgSound.loop = true;
+bgSound.volume = 0.15;
+
+/* 🎤 CYBER AI VOICE */
+function speak(text){
+let s=new SpeechSynthesisUtterance(text);
+s.lang="en-US";
+s.rate=0.9;
+s.pitch=0.3;
+window.speechSynthesis.speak(s);
 }
+
+/* VOICE LINES */
+let voiceLines = [
+"System security is active",
+"Monitoring network traffic",
+"All systems are stable",
+"No intrusion detected",
+"Firewall protection enabled",
+"Analyzing cyber threats",
+"Security protocols running",
+"System is fully protected"
+];
+
+/* START SYSTEM (CLICK REQUIRED) */
+window.addEventListener("click",()=>{
+bgSound.play();
+speak("Cyber security system activated");
+});
+
+/* AUTO VOICE LOOP */
+setInterval(()=>{
+let line = voiceLines[Math.floor(Math.random()*voiceLines.length)];
+speak(line);
+log(line);
+},8000);
 
 </script>
 
