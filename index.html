@@ -113,7 +113,7 @@ updateBar("net");
 updateBar("threat");
 },2000);
 
-/* TERMINAL */
+/* TERMINAL LOG */
 function log(t){
 let term=document.getElementById("terminal");
 term.innerText+="\n> "+t;
@@ -136,12 +136,12 @@ document.getElementById("scan").innerText=s;
 log(s);
 },3000);
 
-/* 🔊 BACKGROUND CYBER SOUND */
+/* 🔊 BACKGROUND SOUND */
 let bgSound = new Audio("https://www.soundjay.com/mechanical/sounds/keyboard-typing-03.mp3");
 bgSound.loop = true;
 bgSound.volume = 0.15;
 
-/* 🎤 CYBER AI VOICE */
+/* 🎤 VOICE */
 function speak(text){
 let s=new SpeechSynthesisUtterance(text);
 s.lang="en-US";
@@ -162,13 +162,13 @@ let voiceLines = [
 "System is fully protected"
 ];
 
-/* START SYSTEM (CLICK REQUIRED) */
-window.addEventListener("click",()=>{
+/* START SYSTEM */
+document.body.addEventListener("click",()=>{
 bgSound.play();
 speak("Cyber security system activated");
 });
 
-/* AUTO VOICE LOOP */
+/* AUTO VOICE */
 setInterval(()=>{
 let line = voiceLines[Math.floor(Math.random()*voiceLines.length)];
 speak(line);
